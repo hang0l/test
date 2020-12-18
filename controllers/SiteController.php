@@ -133,8 +133,8 @@ class SiteController extends Controller
         $json_objects = json_encode($objects);
         $model = new Game();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $model->x_coord = rand(10, 740);
-            $model->y_coord = rand(10, 540);
+            $model->x_coord = rand(100, 740);
+            $model->y_coord = rand(100, 540);
             $model->save();
             $this->refresh();
         }

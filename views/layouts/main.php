@@ -30,6 +30,22 @@ AppAsset::register($this);
 </head>
 <body>
 <?php $this->beginBody() ?>
+    <?php
+    NavBar::begin([
+        'brandLabel' => Yii::$app->name,
+        'brandUrl' => Yii::$app->homeUrl,
+        'options' => [
+            'class' => 'navbar-inverse navbar-fixed-top',
+        ],
+    ]);
+    echo Nav::widget([
+        'options' => ['class' => 'navbar-nav navbar-right'],
+        'items' => [
+            ['label' => 'Game', 'url' => ['/site/play']],
+        ],
+    ]);
+    NavBar::end();
+    ?>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <?= $content ?>

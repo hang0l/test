@@ -91,25 +91,15 @@ class Square {
   	}
 }
 
-
-
-/*
-
-		*/
-
-
 for(let i=0; i<objects.length; i++) {
 	let square = new Square(objects[i]);
 	square.draw();
 }
 
-
-
-
 </script>
 
 
-<div style="width: 200px; position: absolute; right: 15px; top: 15px;">
+<div style="width: 200px; position: absolute; right: 15px; top: 150px;">
 	<?php $form = ActiveForm::begin(); ?>
 
 		   <?= $form->field($model, 'username')->textInput() ?>
