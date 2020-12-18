@@ -20,14 +20,22 @@ AppAsset::register($this);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Game</title>
-    <?= Html::jsFile('@web/js/snap.svg-min.js') ?>
+    <script
+        src="https://code.jquery.com/jquery-1.12.3.min.js"
+        integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ="
+        crossorigin="anonymous">
+    </script>
+    <script type="text/javascript" src="/js/snap.svg-min.js"></script>
 <?php $this->head() ?>
 </head>
 <body>
 <?php $this->beginBody() ?>
-<?= Html::jsFile('@web/js/game.js') ?>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <?= $content ?>
+
 <?php $this->endBody() ?>
+
 </body>
 </html>
 <?php $this->endPage() ?>

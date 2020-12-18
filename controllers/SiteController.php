@@ -129,16 +129,46 @@ class SiteController extends Controller
 
     public function actionPlay()
     {
+        $objects = Game::find()->asArray()->all();
+        $json_objects = json_encode($objects);
         $model = new Game();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $model->x_coord = rand(10, 780);
-            $model->y_coord = rand(10, 590);
+            $model->x_coord = rand(10, 740);
+            $model->y_coord = rand(10, 540);
             $model->save();
             $this->refresh();
         }
         else
         {
-            return $this->render('play', ['model' => $model]);
+            return $this->render('play', ['model' => $model, 'json_objects' => $json_objects]);
         }
+    }
+    public function beforeAction($action) 
+    { 
+        $this->enableCsrfValidation = false; 
+        return parent::beforeAction($action); 
+    }
+
+    public function actionDeleteobject()
+    {
+        $json = json_decode(file_get_contents("php://input"));
+        $array = json_decode(json_encode($json),true);
+        $id = (int)$array['id'];
+        $model=Game::findOne($id); // предполагаем, что запись с ID=10 существует
+        $model->delete();
+    }
+
+    public function actionUpdatecoords()
+    {
+        $json = json_decode(file_get_contents("php://input"));
+        $array = json_decode(json_encode($json),true);
+        $id = (int)$array['id'];
+        $x_coord = (int)$array['x_coord'];
+        $y_coord = (int)$array['y_coord'];
+        $model=Game::findOne($id); 
+        $model->x_coord = $x_coord;
+        $model->y_coord = $y_coord;
+        $model->save();
+        var_dump($model->x_coord);
     }
 }

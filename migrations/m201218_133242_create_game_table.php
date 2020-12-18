@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%game}}`.
  */
-class m201216_133726_create_game_table extends Migration
+class m201218_133242_create_game_table extends Migration
 {
     /**
      * {@inheritdoc}
