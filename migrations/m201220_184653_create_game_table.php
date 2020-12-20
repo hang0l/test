@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%game}}`.
  */
-class m201218_133242_create_game_table extends Migration
+class m201220_184653_create_game_table extends Migration
 {
     /**
      * {@inheritdoc}
@@ -15,8 +15,9 @@ class m201218_133242_create_game_table extends Migration
         $this->createTable('{{%game}}', [
             'id' => $this->primaryKey(),
             'username' => $this->string(),
-            'x_coord' => $this->integer(),
-            'y_coord' => $this->integer(),
+            'shape' => $this->string(),
+            'xCoord' => $this->integer(),
+            'yCoord' => $this->integer(),
         ]);
     }
 

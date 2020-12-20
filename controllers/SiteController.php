@@ -133,8 +133,8 @@ class SiteController extends Controller
         $json_objects = json_encode($objects);
         $model = new Game();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $model->x_coord = rand(100, 740);
-            $model->y_coord = rand(100, 540);
+            $model->xCoord = rand(100, 740);
+            $model->yCoord = rand(100, 540);
             $model->save();
             $this->refresh();
         }
@@ -145,11 +145,13 @@ class SiteController extends Controller
     }
     public function beforeAction($action) 
     { 
-        $this->enableCsrfValidation = false; 
+        if ($action->id == 'update-coords' || $action->id == 'delete-object') {
+            $this->enableCsrfValidation = false;
+        }
         return parent::beforeAction($action); 
     }
 
-    public function actionDeleteobject()
+    public function actionDeleteObject()
     {
         $json = json_decode(file_get_contents("php://input"));
         $array = json_decode(json_encode($json),true);
@@ -158,17 +160,16 @@ class SiteController extends Controller
         $model->delete();
     }
 
-    public function actionUpdatecoords()
+    public function actionUpdateCoords()
     {
         $json = json_decode(file_get_contents("php://input"));
         $array = json_decode(json_encode($json),true);
         $id = (int)$array['id'];
-        $x_coord = (int)$array['x_coord'];
-        $y_coord = (int)$array['y_coord'];
+        $xCoord = (int)$array['xCoord'];
+        $yCoord = (int)$array['yCoord'];
         $model=Game::findOne($id); 
-        $model->x_coord = $x_coord;
-        $model->y_coord = $y_coord;
+        $model->xCoord = $xCoord;
+        $model->yCoord = $yCoord;
         $model->save();
-        var_dump($model->x_coord);
     }
 }

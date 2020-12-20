@@ -9,8 +9,9 @@ use Yii;
  *
  * @property int $id
  * @property string|null $username
- * @property int|null $x_coord
- * @property int|null $y_coord
+ * @property string|null $shape
+ * @property int|null $xCoord
+ * @property int|null $yCoord
  */
 class Game extends \yii\db\ActiveRecord
 {
@@ -28,8 +29,8 @@ class Game extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['x_coord', 'y_coord'], 'integer'],
-            [['username'], 'string', 'max' => 255],
+            [['xCoord', 'yCoord'], 'integer'],
+            [['username', 'shape'], 'string', 'max' => 255],
         ];
     }
 
@@ -41,8 +42,9 @@ class Game extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'username' => 'Username',
-            'x_coord' => 'X Coord',
-            'y_coord' => 'Y Coord',
+            'shape' => 'Shape',
+            'xCoord' => 'X Coord',
+            'yCoord' => 'Y Coord',
         ];
     }
 }
