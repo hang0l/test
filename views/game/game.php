@@ -38,6 +38,6 @@ Yii::$app->view->registerJs("var json_objects_users = " . Json::encode($json_obj
 
     <?php ActiveForm::end(); ?>
 
-    <button type="button" class="btn btn-primary" id="delete">Delete figure</button>
+    <button type="button" class="btn btn-primary" id="deleteFigure">Delete figure</button>
 
 </div>

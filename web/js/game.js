@@ -34,6 +34,7 @@ class Figure {
 		this.figure = 0;
 		this.text = 0;
 		this.group = 0;
+		this.toDelete = 0;
   };
 
   	draw(){
@@ -72,24 +73,30 @@ class Figure {
   	}
 
   	deleteObj(id, figure, text) {
-  		$("#delete").on("click", function(){
-			figure.remove();
-			text.remove();
-			$.ajax({
-				url: 'game/delete-object',
-				type: 'POST',
-				cache: false,
-				data: JSON.stringify({'id': id}),
-				dataType: 'json',
-				contentType: 'application/json',
-				beforeSend: function() {
-					$("delete").prop("disabled", true);
-				},
-				success: function() {
-					$("delete").prop("disabled", false);
-				}
+  		if (this.toDelete === 0) {
+  			this.toDelete = 1;
+			$("#deleteFigure").on("click", function () {
+				$.ajax({
+					url: 'game/delete-object',
+					type: 'POST',
+					cache: false,
+					data: JSON.stringify({'id': id}),
+					dataType: 'json',
+					contentType: 'application/json',
+					beforeSend: function () {
+						$("delete").prop("disabled", true);
+					},
+					success: function () {
+						figure.remove();
+						text.remove();
+						$("delete").prop("disabled", false);
+					},
+					error: function (xhr, textStatus, errorThrown) {
+						alert('Error: ' + xhr.responseText);
+					},
+				});
 			});
-		});
+		}
   	}
 
   	updateCoord() {
@@ -110,7 +117,10 @@ class Figure {
 			data: JSON.stringify({'id': id, 'x': this.x, 'y': this.y,
 				"<?=Yii::$app->request->csrfParam; ?>": "<?=Yii::$app->request->getCsrfToken(); ?>"}),
 			dataType: 'json',
-			contentType: 'application/json',	
+			contentType: 'application/json',
+			error: function(xhr, textStatus, errorThrown) {
+				alert('Error: ' + xhr.responseText);
+            },
 		});
   	}
 }
