@@ -4,29 +4,46 @@ fillCanvas.attr({
 	fill: 'gray',
 });
 
-var objects = JSON.parse(json_objects);
+let objects = JSON.parse(json_objects_users);
+
+class User {
+	constructor(obj) {
+		this.userObject = obj;
+		this.name = this.userObject['username'];
+		this.figuresList = [];
+	}
+
+	createFigures() {
+		for(let i = 0; i < this.userObject['figures'].length; i++) {
+			let figure = new Figure(this.userObject['figures'][i], this.name);
+			this.figuresList.push(figure);
+			figure.draw();
+		}
+	}
+}
 
 class Figure {
-	constructor(obj) {
-	this.id = obj['id'];
-    this.name = obj['username'];
-    this.shape = obj['shape'];
-    this.xCoord = Number(obj['xCoord']);
-    this.yCoord = Number(obj['yCoord']);
-    this.isSelected = 0;
-    this.figure = 0;
-    this.text = 0;
-    this.group = 0;
+	constructor(obj, name) {
+		this.id = obj['id'];
+		this.user_id = obj['user_id']
+		this.name = name;
+		this.shape = obj['shape'];
+		this.x = Number(obj['x']);
+		this.y = Number(obj['y']);
+		this.isSelected = 0;
+		this.figure = 0;
+		this.text = 0;
+		this.group = 0;
   };
 
   	draw(){
   		if (this.shape == 'square') {
-  			this.figure = canvas.rect(this.xCoord, this.yCoord, 50, 50);
-  			this.text = canvas.text(this.xCoord, this.yCoord, this.name);
+  			this.figure = canvas.rect(this.x, this.y, 50, 50);
+  			this.text = canvas.text(this.x, this.y, this.name);
   		}
   		else {
-  			this.figure = canvas.circle(this.xCoord, this.yCoord, 20);
-  			this.text = canvas.text(this.xCoord - 20, this.yCoord - 20, this.name);
+  			this.figure = canvas.circle(this.x, this.y, 20);
+  			this.text = canvas.text(this.x - 20, this.y - 20, this.name);
   		}
   		this.figure.attr({
   			fill: 'black',
@@ -39,7 +56,7 @@ class Figure {
   	}
 
   	selectFigure() {
-  		if (this.isSelected == 0) {
+  		if (this.isSelected === 0) {
   			this.figure.attr({
   				fill: 'red',
   			});
@@ -59,7 +76,7 @@ class Figure {
 			figure.remove();
 			text.remove();
 			$.ajax({
-				url: 'index.php?r=site%2Fdelete-object',
+				url: 'game/delete-object',
 				type: 'POST',
 				cache: false,
 				data: JSON.stringify({'id': id}),
@@ -70,7 +87,7 @@ class Figure {
 				},
 				success: function() {
 					$("delete").prop("disabled", false);
-				}	
+				}
 			});
 		});
   	}
@@ -78,26 +95,27 @@ class Figure {
   	updateCoord() {
   		let id = this.id;
   		let bbox = this.group.getBBox();
-  		if (this.shape == 'square') {
-  			this.xCoord = bbox['x'] + 1; //костыли - BBox() получает координаты группы, а не 
-  			this.yCoord = bbox['y'] + 13; //фигур, поэтому при перерисовке они смещаются
+  		if (this.shape === 'square') {
+  			this.x = bbox['x'] + 1; //костыли - BBox() получает координаты группы, а не
+  			this.y = bbox['y'] + 13; //фигур, поэтому при перерисовке они смещаются
   		}
   		else {
-  			this.xCoord = bbox['cx'] + 1;
-  			this.yCoord = bbox['cy'] + 7;
+  			this.x = bbox['cx'] + 1;
+  			this.y = bbox['cy'] + 7;
   		}
   		$.ajax({
-			url: 'index.php?r=site%2Fupdate-coords',
+			url: 'game/update-coords',
 			type: 'POST',
 			cache: false,
-			data: JSON.stringify({'id': id, 'xCoord': this.xCoord, 'yCoord': this.yCoord}),
+			data: JSON.stringify({'id': id, 'x': this.x, 'y': this.y,
+				"<?=Yii::$app->request->csrfParam; ?>": "<?=Yii::$app->request->getCsrfToken(); ?>"}),
 			dataType: 'json',
 			contentType: 'application/json',	
 		});
   	}
 }
 
-for(let i=0; i<objects.length; i++) {
-	let figure = new Figure(objects[i]);
-	figure.draw();
+for(let i=0; i < objects.length; i++) {
+	let user = new User(objects[i]);
+	user.createFigures();
 }
