@@ -28,8 +28,16 @@ class GameController extends Controller
         if ($user->load(Yii::$app->request->post()) && $user->validate() &&
             $figure->load(Yii::$app->request->post()) && $figure->validate()) {
             try {
-                $user->save();
-                $figure->user_id = $user->id;
+                if (!($userModel = Users::findOne(['username' => $user->username])))
+                {
+                    $figure->user_id = $user->id;
+                    $user->save();
+
+                }
+                else {
+                    $userModel = Users::findOne(['username' => $user->username]);
+                    $figure->user_id = $userModel->id;
+                }
                 $figure->loadDefaultValues();
                 $figure->save();
             }
