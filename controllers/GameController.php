@@ -30,8 +30,8 @@ class GameController extends Controller
             try {
                 if (!($userModel = Users::findOne(['username' => $user->username])))
                 {
-                    $figure->user_id = $user->id;
                     $user->save();
+                    $figure->user_id = $user->id;
 
                 }
                 else {
