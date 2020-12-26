@@ -4,7 +4,7 @@ fillCanvas.attr({
 	fill: 'gray',
 });
 
-let objects = JSON.parse(json_objects_users);
+//let objects = JSON.parse(json_objects_users);
 
 class User {
 	constructor(obj) {
@@ -125,7 +125,7 @@ class Figure {
   	}
 }
 
-for(let i=0; i < objects.length; i++) {
-	let user = new User(objects[i]);
+for(let i=0; i < users.length; i++) {
+	let user = new User(users[i]);
 	user.createFigures();
 }

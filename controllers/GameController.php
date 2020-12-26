@@ -19,10 +19,9 @@ class GameController extends Controller
     public function actionGame(): string
     {
         $users = Users::find()
-            ->joinWith('figures')
+            ->with('figures')
             ->asArray()
             ->all();
-        $json_objects_users = json_encode($users);
         $user = new Users();
         $figure = new Figures();
         if ($user->load(Yii::$app->request->post()) && $user->validate() &&
@@ -49,7 +48,7 @@ class GameController extends Controller
         return $this->render('game', [
             'user' => $user,
             'figure' => $figure,
-            'json_objects_users' => $json_objects_users,
+            'users' => $users,
         ]);
     }
 
@@ -77,7 +76,8 @@ class GameController extends Controller
     public function actionUpdateCoords(): bool
     {
         if (Yii::$app->request->isAjax) {
-            $data = json_decode(file_get_contents("php://input"), true);
+            $data = Yii::$app->request;
+            var_dump($data);exit();
             $id = (int)$data['id'];
             $x = (float)$data['x'];
             $y = (float)$data['y'];

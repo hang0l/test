@@ -15,7 +15,7 @@ AppAsset::register($this);
 
 <?php
 
-Yii::$app->view->registerJs("var json_objects_users = " . Json::encode($json_objects_users)
+Yii::$app->view->registerJs("var users = " . Json::encode($users)
     . ";",
     \yii\web\View::POS_HEAD);
 
