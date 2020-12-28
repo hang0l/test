@@ -8,6 +8,7 @@ use yii\web\Controller;
 use app\models\Figures;
 use app\models\Users;
 use yii\helpers\Json;
+use yii\helpers\Url;
 
 
 class GameController extends Controller
@@ -58,13 +59,23 @@ class GameController extends Controller
     public function actionDeleteObject(): bool
     {
         if (Yii::$app->request->isAjax) {
-            $data = json_decode(file_get_contents("php://input"), true);
-            $id = (int)$data['id'];
+            $data = Yii::$app->request;
+            $id = (int)$data->post('id');
             $figureModel = Figures::findOne($id);
             if ($figureModel->delete()) {
                 return true;
             }
             else{
+                return false;
+            }
+        }
+        else if(Yii::$app->request->get()) {
+            $id = Yii::$app->request->get('id');
+            $figureModel = Figures::findOne($id);
+            if ($figureModel->delete()) {
+                $this->redirect('/');
+                return true;
+            } else {
                 return false;
             }
         }
@@ -75,16 +86,30 @@ class GameController extends Controller
      */
     public function actionUpdateCoords(): bool
     {
-        if (Yii::$app->request->isAjax) {
-            $data = Yii::$app->request;
-            var_dump($data);exit();
-            $id = (int)$data['id'];
-            $x = (float)$data['x'];
-            $y = (float)$data['y'];
+        if (Yii::$app->request->isAjax) { //У меня все получилось, когда я перестал отправлять
+            $data = Yii::$app->request;  //данные через json. Не понял, почему так
+            $id = (int)$data->post('id');
+            $x = (float)$data->post('x');
+            $y = (float)$data->post('y');
             $figureModel = Figures::findOne($id);
             $figureModel->x = $x;
             $figureModel->y = $y;
             if ($figureModel->save()) {
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else if(Yii::$app->request->get()) {
+            $id = Yii::$app->request->get('id');
+            $x = Yii::$app->request->get('x');
+            $y = Yii::$app->request->get('y');
+            $figureModel = Figures::findOne($id);
+            $figureModel->x = $x;
+            $figureModel->y = $y;
+            if ($figureModel->save()) {
+                $this->redirect('/');
                 return true;
             }
             else{

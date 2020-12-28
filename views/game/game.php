@@ -3,15 +3,11 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Json;
-use app\assets\AppAsset;
+use app\models\Users;
 
 ?>
 
-<?php
 
-AppAsset::register($this);
-
-?>
 
 <?php
 
@@ -21,8 +17,31 @@ Yii::$app->view->registerJs("var users = " . Json::encode($users)
 
 ?>
 
+<div style="position: absolute; right: 150px; top: 250px;">
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Figures</th>
+        </tr>
+        <?php
+        $query = Users::find()->asArray()->all();
 
-<div style="width: 200px; position: absolute; right: 150px; top: 150px;">
+        $i = 0;
+        foreach ($query as $object) {
+            echo "<tr>";
+            echo "<td>" . $object['id'] . "</td><td>" . $object['username'] .
+                "</td><td>" . Users::findOne($object['id'])->getFiguresInformation() . "</td>";
+            echo "</tr>";
+
+            $i++;
+        }
+        ?>
+    </table>
+</div>
+
+
+<div style="width: 200px; position: absolute; right: 150px; top: 10px;">
 
     <?php $form = ActiveForm::begin(); ?>
 

@@ -44,4 +44,13 @@ class Users extends ActiveRecord
     {
         return $this->hasMany(Figures::className(), ['user_id' => 'id']);
     }
+
+    public function getFiguresInformation(): string
+    {
+        return 'Squares: ' . $this->getFigures()
+                ->where(['shape' => 'square'])
+                ->count() .', Circles: ' . $this->getFigures()
+                ->where(['shape' => 'circle'])
+                ->count();
+    }
 }

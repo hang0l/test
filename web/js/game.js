@@ -77,12 +77,11 @@ class Figure {
   			this.toDelete = 1;
 			$("#deleteFigure").on("click", function () {
 				$.ajax({
-					url: 'game/delete-object',
+					url: 'index.php?r=game%2Fdelete-object',
 					type: 'POST',
 					cache: false,
-					data: JSON.stringify({'id': id}),
-					dataType: 'json',
-					contentType: 'application/json',
+					data: {'id': id},
+
 					beforeSend: function () {
 						$("delete").prop("disabled", true);
 					},
@@ -111,13 +110,10 @@ class Figure {
   			this.y = bbox['cy'] + 7;
   		}
   		$.ajax({
-			url: 'game/update-coords',
+			url: 'index.php?r=game%2Fupdate-coords',
 			type: 'POST',
 			cache: false,
-			data: JSON.stringify({'id': id, 'x': this.x, 'y': this.y,
-				"<?=Yii::$app->request->csrfParam; ?>": "<?=Yii::$app->request->getCsrfToken(); ?>"}),
-			dataType: 'json',
-			contentType: 'application/json',
+			data: {'id': id, 'x': this.x, 'y': this.y},
 			error: function(xhr, textStatus, errorThrown) {
 				alert('Error: ' + xhr.responseText);
             },

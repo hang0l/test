@@ -2,6 +2,7 @@ html,
 body {
     height: 100%;
 }
+table, th, td {border: 1px solid black;}
 
 .wrap {
     min-height: 100%;
@@ -113,4 +114,5 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
 
