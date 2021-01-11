@@ -149,7 +149,8 @@ $(document).ready(function() {
 				$("#createFigure").prop("disabled", true);
 			},
 			success: function (data) {
-				$("#createFigure").prop("disabled", false);;
+				$("#createFigure").prop("disabled", false);
+				$("#username").val('');
 				let playerObject = {};
 				playerObject['username'] = data['player']['username'];
 				playerObject['figure'] = data['figure'];
