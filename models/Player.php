@@ -3,16 +3,16 @@
 namespace app\models;
 
 use yii\db\ActiveRecord;
-use app\models\Figures;
+use app\models\Figure;
 
-class Users extends ActiveRecord
+class Player extends ActiveRecord
 {
     /**
      * @return string
      */
     public static function tableName(): string
     {
-        return '{{users}}';
+        return '{{player}}';
     }
 
     /**
@@ -40,17 +40,19 @@ class Users extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFigures(): \yii\db\ActiveQuery
+    public function getFigure(): \yii\db\ActiveQuery
     {
-        return $this->hasMany(Figures::className(), ['user_id' => 'id']);
+        return $this->hasMany(Figure::className(), ['player_id' => 'id']);
     }
 
-    public function getFiguresInformation(): string
+    public function getFigureInformation(): array
     {
-        return 'Squares: ' . $this->getFigures()
-                ->where(['shape' => 'square'])
-                ->count() .', Circles: ' . $this->getFigures()
-                ->where(['shape' => 'circle'])
-                ->count();
+        $figureCount['square'] = $this->getFigure()
+            ->where(['shape' => 'square'])
+            ->count();
+        $figureCount['circle'] = $this->getFigure()
+            ->where(['shape' => 'circle'])
+            ->count();
+        return $figureCount;
     }
 }

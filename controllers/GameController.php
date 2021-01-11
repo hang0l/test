@@ -2,13 +2,11 @@
 
 namespace app\controllers;
 
-use Codeception\PHPUnit\Constraint\Page;
 use Yii;
 use yii\web\Controller;
-use app\models\Figures;
-use app\models\Users;
-use yii\helpers\Json;
-use yii\helpers\Url;
+use app\models\Figure;
+use app\models\Player;
+use yii\data\ActiveDataProvider;
 
 
 class GameController extends Controller
@@ -19,37 +17,19 @@ class GameController extends Controller
      */
     public function actionGame(): string
     {
-        $users = Users::find()
-            ->with('figures')
+        $dataProvider = new ActiveDataProvider([
+            'query' => Player::find(),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+        $players = Player::find()
+            ->with('figure')
             ->asArray()
             ->all();
-        $user = new Users();
-        $figure = new Figures();
-        if ($user->load(Yii::$app->request->post()) && $user->validate() &&
-            $figure->load(Yii::$app->request->post()) && $figure->validate()) {
-            try {
-                if (!($userModel = Users::findOne(['username' => $user->username])))
-                {
-                    $user->save();
-                    $figure->user_id = $user->id;
-
-                }
-                else {
-                    $userModel = Users::findOne(['username' => $user->username]);
-                    $figure->user_id = $userModel->id;
-                }
-                $figure->loadDefaultValues();
-                $figure->save();
-            }
-            catch (\Exception $error) {
-                throw $error;
-            }
-            $this->refresh();
-        }
         return $this->render('game', [
-            'user' => $user,
-            'figure' => $figure,
-            'users' => $users,
+            'players' => $players,
+            'dataProvider' => $dataProvider
         ]);
     }
 
@@ -61,24 +41,25 @@ class GameController extends Controller
         if (Yii::$app->request->isAjax) {
             $data = Yii::$app->request;
             $id = (int)$data->post('id');
-            $figureModel = Figures::findOne($id);
+            $figureModel = Figure::findOne($id);
+            var_dump($figureModel);
             if ($figureModel->delete()) {
                 return true;
             }
-            else{
-                return false;
-            }
+            return false;
         }
+        /*
         else if(Yii::$app->request->get()) {
             $id = Yii::$app->request->get('id');
-            $figureModel = Figures::findOne($id);
+            $figureModel = Figure::findOne($id);
             if ($figureModel->delete()) {
                 $this->redirect('/');
                 return true;
-            } else {
-                return false;
             }
+            return false;
+
         }
+        */
     }
 
     /**
@@ -86,35 +67,60 @@ class GameController extends Controller
      */
     public function actionUpdateCoords(): bool
     {
-        if (Yii::$app->request->isAjax) { //У меня все получилось, когда я перестал отправлять
-            $data = Yii::$app->request;  //данные через json. Не понял, почему так
-            $id = (int)$data->post('id');
-            $x = (float)$data->post('x');
-            $y = (float)$data->post('y');
-            $figureModel = Figures::findOne($id);
-            $figureModel->x = $x;
-            $figureModel->y = $y;
+        if (Yii::$app->request->isAjax) {
+            $id = Yii::$app->request->post('id');
+            $figureModel = Figure::findOne($id);
+            $figureModel->load(Yii::$app->request->post(), '');
             if ($figureModel->save()) {
                 return true;
             }
-            else{
-                return false;
-            }
+            return false;
+
         }
+        /*
         else if(Yii::$app->request->get()) {
             $id = Yii::$app->request->get('id');
-            $x = Yii::$app->request->get('x');
-            $y = Yii::$app->request->get('y');
-            $figureModel = Figures::findOne($id);
-            $figureModel->x = $x;
-            $figureModel->y = $y;
+            $figureModel = Figure::findOne($id);
+            $figureModel->load(Yii::$app->request->get(), '');
             if ($figureModel->save()) {
                 $this->redirect('/');
                 return true;
             }
-            else{
-                return false;
+            return false;
+        }
+        */
+    }
+
+    public function actionCreateFigure()
+    {
+        $player = new Player();
+        $figure = new Figure();
+        $player->username = Yii::$app->request->post('username');
+        $figure->shape = Yii::$app->request->post('shape');
+        if ($player->validate() && $figure->validate())
+        {
+            try {
+                if (!($playerModel = Player::findOne(['username' => $player->username])))
+                {
+                    $player->save();
+                    $figure->player_id = $player->id;
+
+                }
+                else {
+                    $playerModel = Player::findOne(['username' => $player->username]);
+                    $player = $playerModel;
+                    $figure->player_id = $playerModel->id;
+
+                }
+                $figure->save();
+            }
+            catch (\Exception $error) {
+                throw $error;
             }
         }
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
+        $response->data = ['player' => $player, 'figure' => $figure];
+        return $data;
     }
 }

@@ -4,28 +4,33 @@ fillCanvas.attr({
 	fill: 'gray',
 });
 
-//let objects = JSON.parse(json_objects_users);
-
-class User {
+class Player {
 	constructor(obj) {
-		this.userObject = obj;
-		this.name = this.userObject['username'];
+		this.playerObject = obj;
+		this.name = this.playerObject['username'];
 		this.figuresList = [];
 	}
 
 	createFigures() {
-		for(let i = 0; i < this.userObject['figures'].length; i++) {
-			let figure = new Figure(this.userObject['figures'][i], this.name);
+		for(let i = 0; i < this.playerObject['figure'].length; i++) {
+			let figure = new Figure(this.playerObject['figure'][i], this.name);
 			this.figuresList.push(figure);
 			figure.draw();
 		}
+	}
+
+	createFigure()
+	{
+		let figure = new Figure(this.playerObject['figure'], this.name);
+		this.figuresList.push(figure);
+		figure.draw();
 	}
 }
 
 class Figure {
 	constructor(obj, name) {
 		this.id = obj['id'];
-		this.user_id = obj['user_id']
+		this.player = obj['player_id']
 		this.name = name;
 		this.shape = obj['shape'];
 		this.x = Number(obj['x']);
@@ -77,18 +82,18 @@ class Figure {
   			this.toDelete = 1;
 			$("#deleteFigure").on("click", function () {
 				$.ajax({
-					url: 'index.php?r=game%2Fdelete-object',
+					url: 'index.php/game/delete-object/',
 					type: 'POST',
 					cache: false,
 					data: {'id': id},
 
 					beforeSend: function () {
-						$("delete").prop("disabled", true);
+						$("#deleteFigure").prop("disabled", true);
 					},
 					success: function () {
 						figure.remove();
 						text.remove();
-						$("delete").prop("disabled", false);
+						$("#deleteFigure").prop("disabled", false);
 					},
 					error: function (xhr, textStatus, errorThrown) {
 						alert('Error: ' + xhr.responseText);
@@ -110,10 +115,16 @@ class Figure {
   			this.y = bbox['cy'] + 7;
   		}
   		$.ajax({
-			url: 'index.php?r=game%2Fupdate-coords',
+			url: 'index.php/game/update-coords/', // + id + '/',
 			type: 'POST',
 			cache: false,
 			data: {'id': id, 'x': this.x, 'y': this.y},
+			beforeSend: function () {
+				$("#createFigure").prop("disabled", true);
+			},
+			success: function (data) {
+				$("#createFigure").prop("disabled", false);
+			},
 			error: function(xhr, textStatus, errorThrown) {
 				alert('Error: ' + xhr.responseText);
             },
@@ -121,7 +132,39 @@ class Figure {
   	}
 }
 
-for(let i=0; i < users.length; i++) {
-	let user = new User(users[i]);
-	user.createFigures();
+for(let i=0; i < players.length; i++) {
+	let player = new Player(players[i]);
+	player.createFigures();
 }
+$(document).ready(function() {
+	$("#createFigure").on("click", function () {
+		let username = $('#username').val();
+		let figure = $('#figure').val();
+		$.ajax({
+			url: 'index.php/game/create-figure/',
+			type: 'POST',
+			cache: false,
+			data: {'username': username, 'shape': figure},
+			beforeSend: function () {
+				$("#createFigure").prop("disabled", true);
+			},
+			success: function (data) {
+				$("#createFigure").prop("disabled", false);;
+				let playerObject = {};
+				playerObject['username'] = data['player']['username'];
+				playerObject['figure'] = data['figure'];
+				let player = new Player(playerObject);
+				player.createFigure();
+			},
+			error: function (xhr, textStatus, errorThrown) {
+				alert('Error: ' + xhr.responseText);
+			},
+		});
+	});
+});
+
+$(document).ready(function() {
+	$("#updateTable").on("click", function () {
+		$.pjax.reload({container: '#pjax_1'})
+	});
+});

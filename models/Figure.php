@@ -3,16 +3,16 @@
 namespace app\models;
 
 use yii\db\ActiveRecord;
-use app\models\Users;
+use app\models\Player;
 
-class Figures extends ActiveRecord
+class Figure extends ActiveRecord
 {
     /**
      * @return string
      */
     public static function tableName(): string
     {
-        return '{{figures}}';
+        return '{{figure}}';
     }
 
     /**
@@ -37,7 +37,7 @@ class Figures extends ActiveRecord
             'x' => 'X',
             'y' => 'Y',
             'shape' => 'Shape',
-            'user_id' => 'User ID',
+            'player_id' => 'Player ID',
         ];
     }
 }
