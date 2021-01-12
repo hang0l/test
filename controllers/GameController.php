@@ -93,34 +93,29 @@ class GameController extends Controller
 
     public function actionCreateFigure()
     {
-        $player = new Player();
         $figure = new Figure();
-        $player->username = Yii::$app->request->post('username');
-        $figure->shape = Yii::$app->request->post('shape');
-        if ($player->validate() && $figure->validate())
-        {
-            try {
-                if (!($playerModel = Player::findOne(['username' => $player->username])))
-                {
-                    $player->save();
-                    $figure->player_id = $player->id;
-
-                }
-                else {
-                    $playerModel = Player::findOne(['username' => $player->username]);
-                    $player = $playerModel;
+        try {
+            $figure->load(Yii::$app->request->post(), '');
+            $playerModel = Player::findOne(['username' => Yii::$app->request->post('username')]);
+            if ($figure->validate()) {
+                if (!($playerModel)) {
+                    $playerModel = new Player();
+                    if ($playerModel->validate()){
+                        $playerModel->save();
+                    }
                     $figure->player_id = $playerModel->id;
-
+                } else {
+                    $figure->player_id = $playerModel->id;
                 }
                 $figure->save();
             }
-            catch (\Exception $error) {
-                throw $error;
-            }
+        }
+        catch (\Exception $error) {
+            throw $error;
         }
         $response = Yii::$app->response;
         $response->format = \yii\web\Response::FORMAT_JSON;
-        $response->data = ['player' => $player, 'figure' => $figure];
-        return $data;
+        $response->data = ['player' => $playerModel, 'figure' => $figure];
+        return $response->data;
     }
 }
