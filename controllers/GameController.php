@@ -120,11 +120,5 @@ class GameController extends Controller
         catch (\Exception $error) {
             throw $error;
         }
-        /*
-        $response = Yii::$app->response;
-        $response->format = \yii\web\Response::FORMAT_JSON;
-        $response->data = ['player' => $playerModel, 'figure' => $figure];
-        return $response->data;
-        */
     }
 }
