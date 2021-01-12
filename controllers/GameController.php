@@ -94,6 +94,8 @@ class GameController extends Controller
     public function actionCreateFigure()
     {
         $figure = new Figure();
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
         try {
             $figure->load(Yii::$app->request->post(), '');
             $playerModel = Player::findOne(['username' => Yii::$app->request->post('username')]);
@@ -102,20 +104,27 @@ class GameController extends Controller
                     $playerModel = new Player();
                     if ($playerModel->validate()){
                         $playerModel->save();
+                    } else {
+                        return $response->data = ['error' => 'Username is invalid'];
                     }
-                    $figure->player_id = $playerModel->id;
-                } else {
-                    $figure->player_id = $playerModel->id;
                 }
+                $figure->player_id = $playerModel->id;
                 $figure->save();
+                $response->data = ['player' => $playerModel, 'figure' => $figure];
+                return $response->data;
+            }
+            else{
+                return $response->data = ['error' => 'Your figure is invalid'];
             }
         }
         catch (\Exception $error) {
             throw $error;
         }
+        /*
         $response = Yii::$app->response;
         $response->format = \yii\web\Response::FORMAT_JSON;
         $response->data = ['player' => $playerModel, 'figure' => $figure];
         return $response->data;
+        */
     }
 }

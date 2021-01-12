@@ -151,11 +151,15 @@ $(document).ready(function() {
 			success: function (data) {
 				$("#createFigure").prop("disabled", false);
 				$("#username").val('');
-				let playerObject = {};
-				playerObject['username'] = data['player']['username'];
-				playerObject['figure'] = data['figure'];
-				let player = new Player(playerObject);
-				player.createFigure();
+				if (data['error']){
+					alert(data['error']);
+				} else {
+					let playerObject = {};
+					playerObject['username'] = data['player']['username'];
+					playerObject['figure'] = data['figure'];
+					let player = new Player(playerObject);
+					player.createFigure();
+				}
 			},
 			error: function (xhr, textStatus, errorThrown) {
 				alert('Error: ' + xhr.responseText);
