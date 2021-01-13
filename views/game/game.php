@@ -36,7 +36,9 @@ Yii::$app->view->registerJs("var players = " . Json::encode($players)
                 'value' => function ($data) //правильно ли я понял, что $data "берется" из $dataProvider? автоматически?
                 {
                     return 'Circles: ' . $data->getFigureInformation()['circle'] . ', ' .
-                        'Squares: ' . $data->getFigureInformation()['square'];
+                        'Squares: ' . $data->getFigureInformation()['square'] . ', ' .
+                     'Triangles: ' . $data->getFigureInformation()['triangle'] . ', ' .
+                    'Hexagons: ' . $data->getFigureInformation()['hexagon'];
                 }
             ]
         ],
@@ -54,6 +56,8 @@ Yii::$app->view->registerJs("var players = " . Json::encode($players)
     <select id="figure" name="figure">
         <option value="circle">Circle</option>
         <option value="square">Square</option>
+        <option value="triangle">Triangle</option>
+        <option value="hexagon">Hexagon</option>
     </select>
     <button type="button" class="btn btn-primary" id="createFigure">Create figure</button>
     <button type="button" class="btn btn-primary" id="deleteFigure">Delete figure</button>

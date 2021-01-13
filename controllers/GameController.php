@@ -102,10 +102,10 @@ class GameController extends Controller
             if ($figure->validate()) {
                 if (!($playerModel)) {
                     $playerModel = new Player();
-                    if ($playerModel->validate()){
+                    if ($playerModel->validate()) {
                         $playerModel->save();
                     } else {
-                        return $response->data = ['error' => 'Username is invalid'];
+                        return $response->data = ['error' => $playerModel->getErrors()];
                     }
                 }
                 $figure->player_id = $playerModel->id;
@@ -114,8 +114,8 @@ class GameController extends Controller
                 return $response->data;
             }
             else{
-                return $response->data = ['error' => 'Your figure is invalid'];
-            }
+                    return $response->data = ['error' => $figure->getErrors()];
+                }
         }
         catch (\Exception $error) {
             throw $error;

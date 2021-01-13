@@ -53,6 +53,12 @@ class Player extends ActiveRecord
         $figureCount['circle'] = $this->getFigure()
             ->where(['shape' => 'circle'])
             ->count();
+        $figureCount['triangle'] = $this->getFigure()
+            ->where(['shape' => 'triangle'])
+            ->count();
+        $figureCount['hexagon'] = $this->getFigure()
+            ->where(['shape' => 'hexagon'])
+            ->count();
         return $figureCount;
     }
 }
