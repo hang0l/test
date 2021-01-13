@@ -84,12 +84,12 @@ class Figure {
 		let bbox = this.group.getBBox();
 		this.cx = bbox['cx'];
 		this.cy = bbox['cy'];
-  		this.group.drag();
   		this.figure.mousedown(this.selectFigure.bind(this));
   	}
 
   	selectFigure() {
 		this.figure.mouseup(this.updateCoord.bind(this));
+		this.group.drag();
   		if (this.isSelected === 0) {
   			this.figure.attr({
   				fill: 'red',
@@ -141,6 +141,7 @@ class Figure {
 				$("#createFigure").prop("disabled", false);
 				this.checkCollision()
 				this.figure.unmouseup();
+				this.group.undrag();
 			},
 			error: function (xhr, textStatus, errorThrown) {
 				alert('Error: ' + xhr.responseText);
