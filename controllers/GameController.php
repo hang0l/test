@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\CheckCollision;
 use Yii;
 use yii\web\Controller;
 use app\models\Figure;
@@ -42,7 +43,6 @@ class GameController extends Controller
             $data = Yii::$app->request;
             $id = (int)$data->post('id');
             $figureModel = Figure::findOne($id);
-            var_dump($figureModel);
             if ($figureModel->delete()) {
                 return true;
             }
@@ -93,33 +93,71 @@ class GameController extends Controller
 
     public function actionCreateFigure()
     {
-        $figure = new Figure();
+        $figureModel = new Figure();
         $response = Yii::$app->response;
         $response->format = \yii\web\Response::FORMAT_JSON;
         try {
-            $figure->load(Yii::$app->request->post(), '');
+            $figureModel->load(Yii::$app->request->post(), '');
             $playerModel = Player::findOne(['username' => Yii::$app->request->post('username')]);
-            if ($figure->validate()) {
-                if (!($playerModel)) {
-                    $playerModel = new Player();
-                    $playerModel->load(Yii::$app->request->post(), '');
-                    if ($playerModel->validate()) {
-                        $playerModel->save();
+            if (!($playerModel)) {
+                $playerModel = new Player();
+                $playerModel->load(Yii::$app->request->post(), '');
+            }
+            if ($figureModel->validate() && $playerModel->validate()) {
+                $playerModel->save();
+                $figureModel->player_id = $playerModel->id;
+                $figureModel->save();
+                return $response->data = ['player' => $playerModel, 'figure' => $figureModel];
+            } else {
+                return $response->data = $playerModel->getErrors() ? ['error' => $playerModel->getErrors()] :
+                    ['error' => $figureModel->getErrors()];
+            }
+        } catch (\Exception $error) {
+            throw $error;
+        }
+    }
+
+    public function actionCheckCollision()
+    {
+        $figureOne = new CheckCollision();
+        $figureOne->load(Yii::$app->request->post(), '');
+        $figures = Figure::find()->asArray()->all();
+        for($i = 0; $i < count($figures); $i ++)
+		{
+            if ($figureOne->id !== $figures[$i]['id']) {
+                $figureTwoX = $figures[$i]['x'];
+				$figureTwoY = $figures[$i]['y'];
+				$distanceBetweenCentres = $figureOne->d;
+				if ($figureOne->x > $figureTwoX) {
+                    if ($figureOne->y > $figureTwoY) {
+                        if ($figureOne->x - $figureTwoX < $distanceBetweenCentres &&
+                            $figureOne->y - $figureTwoY < $distanceBetweenCentres) {
+                            return $figureOne->returnIdToDelete($figureOne->id,
+                                $figures[$i]['id']);
+                        }
                     } else {
-                        return $response->data = ['error' => $playerModel->getErrors()];
+                        if ($figureOne->x - $figureTwoX < $distanceBetweenCentres &&
+                            $figureTwoY - $figureOne->y < $distanceBetweenCentres) {
+                            return $figureOne->returnIdToDelete($figureOne->id,
+                                $figures[$i]['id']);
+                        }
+                    }
+                } else {
+                    if ($figureOne->y > $figureTwoY) {
+                        if ($figureTwoX - $figureOne->x < $distanceBetweenCentres &&
+                            $figureOne->y - $figureTwoY < $distanceBetweenCentres) {
+                            return $figureOne->returnIdToDelete($figureOne->id,
+                                $figures[$i]['id']);
+                        }
+                    } else {
+                        if ($figureTwoX - $figureOne->x < $distanceBetweenCentres &&
+                            $figureTwoY - $figureOne->y < $distanceBetweenCentres) {
+                            return $figureOne->returnIdToDelete($figureOne->id,
+                                $figures[$i]['id']);
+                        }
                     }
                 }
-                $figure->player_id = $playerModel->id;
-                $figure->save();
-                $response->data = ['player' => $playerModel, 'figure' => $figure];
-                return $response->data;
-            }
-            else{
-                    return $response->data = ['error' => $figure->getErrors()];
-                }
-        }
-        catch (\Exception $error) {
-            throw $error;
+			}
         }
     }
 }
