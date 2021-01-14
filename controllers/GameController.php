@@ -102,6 +102,7 @@ class GameController extends Controller
             if ($figure->validate()) {
                 if (!($playerModel)) {
                     $playerModel = new Player();
+                    $playerModel->load(Yii::$app->request->post(), '');
                     if ($playerModel->validate()) {
                         $playerModel->save();
                     } else {

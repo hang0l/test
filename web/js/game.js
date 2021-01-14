@@ -118,6 +118,7 @@ class Figure {
   	}
 
   	updateCoord() {
+  		console.log('Method is working');
 		let bbox = this.group.getBBox();
 		this.cx = bbox['cx'];
 		this.cy = bbox['cy'];
