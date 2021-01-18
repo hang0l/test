@@ -45,7 +45,7 @@ class Figure {
 		this.group = 0;
 		this.toDelete = 0;
 		this.r = 25; // радиус, записано так для краткости. У всех фигур одинаковый
-		this.d = this.r * 2; //диаметр. С его помощью будет проверятся соприкосновение фигур
+		this.collisionDistance = this.r * 2; //диаметр. С его помощью будет проверятся соприкосновение фигур
   };
   	draw(){
   		if (this.shape === 'square') {
@@ -149,7 +149,7 @@ class Figure {
 			type: 'POST',
 			cache: false,
 			data: {'id': this.id, 'x': this.x, 'y': this.y,
-			'd': this.d, 'name': this.name},
+			'collisionDistance': this.collisionDistance, 'name': this.name},
 			success: (data) => {
 				let id = data['id'];
 				for (let i = 0; i < figuresList.length; i ++)

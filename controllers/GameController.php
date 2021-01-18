@@ -91,7 +91,11 @@ class GameController extends Controller
         */
     }
 
-    public function actionCreateFigure()
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function actionCreateFigure(): array
     {
         $figureModel = new Figure();
         $response = Yii::$app->response;
@@ -109,7 +113,7 @@ class GameController extends Controller
                 $figureModel->save();
                 return $response->data = ['player' => $playerModel, 'figure' => $figureModel];
             } else {
-                return $response->data = $playerModel->getErrors() ? ['error' => $playerModel->getErrors()] :
+                return $response->data = ['error' => $playerModel->getErrors()] ??
                     ['error' => $figureModel->getErrors()];
             }
         } catch (\Exception $error) {
@@ -117,47 +121,29 @@ class GameController extends Controller
         }
     }
 
-    public function actionCheckCollision()
+    /**
+     * @return array
+     */
+    public function actionCheckCollision(): array
     {
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
         $figureOne = new CheckCollision();
         $figureOne->load(Yii::$app->request->post(), '');
-        $figures = Figure::find()->asArray()->all();
-        for($i = 0; $i < count($figures); $i ++)
-		{
-            if ($figureOne->id !== $figures[$i]['id']) {
-                $figureTwoX = $figures[$i]['x'];
-				$figureTwoY = $figures[$i]['y'];
-				$distanceBetweenCentres = $figureOne->d;
-				if ($figureOne->x > $figureTwoX) {
-                    if ($figureOne->y > $figureTwoY) {
-                        if ($figureOne->x - $figureTwoX < $distanceBetweenCentres &&
-                            $figureOne->y - $figureTwoY < $distanceBetweenCentres) {
-                            return $figureOne->returnIdToDelete($figureOne->id,
-                                $figures[$i]['id']);
-                        }
-                    } else {
-                        if ($figureOne->x - $figureTwoX < $distanceBetweenCentres &&
-                            $figureTwoY - $figureOne->y < $distanceBetweenCentres) {
-                            return $figureOne->returnIdToDelete($figureOne->id,
-                                $figures[$i]['id']);
-                        }
-                    }
-                } else {
-                    if ($figureOne->y > $figureTwoY) {
-                        if ($figureTwoX - $figureOne->x < $distanceBetweenCentres &&
-                            $figureOne->y - $figureTwoY < $distanceBetweenCentres) {
-                            return $figureOne->returnIdToDelete($figureOne->id,
-                                $figures[$i]['id']);
-                        }
-                    } else {
-                        if ($figureTwoX - $figureOne->x < $distanceBetweenCentres &&
-                            $figureTwoY - $figureOne->y < $distanceBetweenCentres) {
-                            return $figureOne->returnIdToDelete($figureOne->id,
-                                $figures[$i]['id']);
-                        }
-                    }
-                }
-			}
+        $figureOne->collisionDistance = (int)Yii::$app->request->post('collisionDistance');
+        $figures = Figure::find()->all();
+        $figuresLength = count($figures);
+        for($index = 0; $index <  $figuresLength; $index ++) {
+            $distanceBetweenCenters = sqrt(
+                (($figureOne->x - $figures[$index]->x) ** 2) +
+                (($figureOne->y - $figures[$index]->y) ** 2)
+            );
+            if ($distanceBetweenCenters < $figureOne->collisionDistance) {
+                return $response->data =
+                    ['id' => $figureOne->getIdToDelete(
+                        $figureOne->id, $figures[$index]->id)
+                    ];
+            }
         }
     }
 }
