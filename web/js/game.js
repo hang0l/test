@@ -39,6 +39,7 @@ class Figure {
 		this.shape = obj['shape'];
 		this.x = Number(obj['x']);
 		this.y = Number(obj['y']);
+		this.isActive = obj['isActive'];
 		this.isSelected = 0;
 		this.figure = 0;
 		this.text = 0;
@@ -48,38 +49,35 @@ class Figure {
 		this.collisionDistance = this.r * 2; //диаметр. С его помощью будет проверятся соприкосновение фигур
   };
   	draw(){
-  		if (this.shape === 'square') {
-  			this.figure = canvas.rect(this.x - this.r, this.y - this.r, this.r * 2, this.r * 2);
-  			this.text = canvas.text(this.x - this.r, this.y - this.r, this.name);
-  		}
-  		else if (this.shape === 'triangle')
-		{
-			this.figure = canvas.polygon(this.x, this.y - this.r, this.x + this.r,
-				this.y + this.r / 1.5, this.x - this.r, this.y + this.r / 1.5);
-			this.text = canvas.text(this.x - 17, this.y - this.r, this.name);
+  		if (this.isActive == true) {
+			if (this.shape === 'square') {
+				this.figure = canvas.rect(this.x - this.r, this.y - this.r, this.r * 2, this.r * 2);
+				this.text = canvas.text(this.x - this.r, this.y - this.r, this.name);
+			} else if (this.shape === 'triangle') {
+				this.figure = canvas.polygon(this.x, this.y - this.r, this.x + this.r,
+					this.y + this.r / 1.5, this.x - this.r, this.y + this.r / 1.5);
+				this.text = canvas.text(this.x - 17, this.y - this.r, this.name);
+			} else if (this.shape === 'hexagon') {
+				this.figure = canvas.polygon(this.x, this.y - this.r,
+					this.x + this.r, this.y - this.r / 1.5, this.x + this.r,
+					this.y + this.r / 1.5, this.x, this.y + this.r,
+					this.x - this.r, this.y + this.r / 1.5, this.x - this.r,
+					this.y - this.r / 1.5);
+				this.text = canvas.text(this.x - this.r, this.y - this.r, this.name);
+			} else {
+				this.figure = canvas.circle(this.x, this.y, this.r);
+				this.text = canvas.text(this.x - this.r, this.y - this.r, this.name);
+			}
+			this.figure.attr({
+				fill: 'black',
+			});
+			this.group = canvas.group(this.figure, this.text);
+			let bbox = this.group.getBBox();
+			this.x = bbox['cx'];
+			this.y = bbox['cy'];
+			this.figure.mousedown(this.selectFigure.bind(this));
+			this.group.drag();
 		}
-		else if (this.shape === 'hexagon')
-		{
-			this.figure = canvas.polygon(this.x, this.y - this.r,
-				this.x + this.r, this.y - this.r / 1.5, this.x + this.r,
-				this.y + this.r / 1.5, this.x, this.y + this.r,
-				this.x - this.r, this.y + this.r / 1.5, this.x - this.r,
-				this.y - this.r / 1.5);
-			this.text = canvas.text(this.x - this.r, this.y - this.r, this.name);
-		}
-  		else {
-  			this.figure = canvas.circle(this.x, this.y, this.r);
-  			this.text = canvas.text(this.x - this.r, this.y - this.r, this.name);
-  		}
-  		this.figure.attr({
-  			fill: 'black',
-  		});
-  		this.group = canvas.group(this.figure, this.text);
-		let bbox = this.group.getBBox();
-		this.x = bbox['cx'];
-		this.y = bbox['cy'];
-  		this.figure.mousedown(this.selectFigure.bind(this));
-		this.group.drag();
   	}
 
   	selectFigure() {
@@ -174,6 +172,7 @@ for(let i=0; i < players.length; i++) {
 	let player = new Player(players[i]);
 	player.createFigures();
 }
+
 $(document).ready(function() {
 	$("#createFigure").on("click", function () {
 		let username = $('#username').val();

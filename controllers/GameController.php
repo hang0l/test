@@ -3,7 +3,9 @@
 namespace app\controllers;
 
 use app\models\CheckCollision;
+use app\models\SignUpForm;
 use Yii;
+use yii\helpers\Url;
 use yii\web\Controller;
 use app\models\Figure;
 use app\models\Player;
@@ -36,6 +38,7 @@ class GameController extends Controller
 
     /**
      * @return bool
+     * @throws \Exception
      */
     public function actionDeleteObject(): bool
     {
@@ -43,7 +46,7 @@ class GameController extends Controller
             $data = Yii::$app->request;
             $id = (int)$data->post('id');
             $figureModel = Figure::findOne($id);
-            if ($figureModel->delete()) {
+            if ($figureModel->safeDelete()) {
                 return true;
             }
             return false;
@@ -124,14 +127,14 @@ class GameController extends Controller
     /**
      * @return array
      */
-    public function actionCheckCollision(): array
+    public function actionCheckCollision()
     {
         $response = Yii::$app->response;
         $response->format = \yii\web\Response::FORMAT_JSON;
         $figureOne = new CheckCollision();
         $figureOne->load(Yii::$app->request->post(), '');
         $figureOne->collisionDistance = (int)Yii::$app->request->post('collisionDistance');
-        $figures = Figure::find()->all();
+        $figures = Figure::find()->where(['not in', 'id', $figureOne->id])->all();
         $figuresLength = count($figures);
         for($index = 0; $index <  $figuresLength; $index ++) {
             $distanceBetweenCenters = sqrt(
@@ -139,11 +142,47 @@ class GameController extends Controller
                 (($figureOne->y - $figures[$index]->y) ** 2)
             );
             if ($distanceBetweenCenters < $figureOne->collisionDistance) {
+                //echo '<pre>';
+                //var_dump($figureOne->id, $figures[$index]->id);
+                //echo '</pre>';
                 return $response->data =
                     ['id' => $figureOne->getIdToDelete(
                         $figureOne->id, $figures[$index]->id)
                     ];
             }
         }
+    }
+
+    /**
+     * @return string|\yii\web\Response
+     */
+    public function actionSignIn()
+    {
+        $playerModel = new SignUpForm();
+        if ($playerModel->load(Yii::$app->request->post()) && $playerModel->validate()) {
+            return $this->redirect(Url::toRoute(['game/figures-list', 'username' => $playerModel->username]));
+        } else {
+            return $this->render('sign-in', ['playerModel' => $playerModel]);
+        }
+    }
+
+    public function actionFiguresList($username): string
+    {
+        $player = Player::findOne(['username' => $username]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => Figure::find()
+            ->where(['player_id' => $player->id]),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+        return $this->render('figures-list', ['dataProvider' => $dataProvider]);
+    }
+
+    public function actionRestoreFigure($id)
+    {
+        $figure = Figure::findOne($id);
+        $figure->restoreFigure();
+        return $this->redirect(Yii::$app->request->referrer);
     }
 }

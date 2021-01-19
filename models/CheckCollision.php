@@ -48,9 +48,10 @@ class CheckCollision extends Model
 		$figureModelTwo = Figure::findOne($secondId);
 		if ($figureModelOne->player_id !== $figureModelTwo->player_id) {
 			if ($this->getShapeNumber($figureModelOne) > $this->getShapeNumber($figureModelTwo)) {
-				return $figureModelTwo->id;
+				return (int)$figureModelTwo->id;
 			} else if ($this->getShapeNumber($figureModelOne) < $this->getShapeNumber($figureModelTwo)) {
-				return $figureModelOne->id;
+				var_dump($figureModelOne->id);
+				return (int)$figureModelOne->id;
 			}
 		}
 	}

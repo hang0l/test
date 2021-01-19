@@ -2,6 +2,7 @@
 
 use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\helpers\Json;
 use app\models\Player;
@@ -17,11 +18,11 @@ use yii\widgets\Pjax;
 Yii::$app->view->registerJs("var players = " . Json::encode($players)
     . ";",
     \yii\web\View::POS_HEAD);
-
+Yii::$app->view->registerJsFile('js/game.js');
 ?>
 
 <!-- Grid starts -->
-<div id = "scoreTable" style="width: 400px; position: absolute; left: 820px; top: 150px;">
+<div id = "scoreTable" style="width: 400px; position: absolute; left: 820px; top: 200px;">
     <?php Pjax::begin(['id' => 'pjax_1']); ?>
     <?php
     echo GridView::widget([
@@ -61,4 +62,7 @@ Yii::$app->view->registerJs("var players = " . Json::encode($players)
     </select>
     <button type="button" class="btn btn-primary" id="createFigure">Create figure</button>
     <button type="button" class="btn btn-primary" id="deleteFigure">Delete figure</button>
+    <a href="<?= Url::toRoute(['game/sign-in'])?>">
+        <button type="button" class="btn btn-primary">See your figures</button>
+    </a>
 </div>
