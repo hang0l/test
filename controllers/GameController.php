@@ -166,6 +166,10 @@ class GameController extends Controller
         }
     }
 
+    /**
+     * @param $username
+     * @return string
+     */
     public function actionFiguresList($username): string
     {
         $player = Player::findOne(['username' => $username]);
@@ -179,10 +183,18 @@ class GameController extends Controller
         return $this->render('figures-list', ['dataProvider' => $dataProvider]);
     }
 
+    /**
+     * @param $id
+     * @return false|\yii\web\Response
+     * @throws \Exception
+     */
     public function actionRestoreFigure($id)
     {
-        $figure = Figure::findOne($id);
-        $figure->restoreFigure();
-        return $this->redirect(Yii::$app->request->referrer);
+        if($figure = Figure::findOne($id)) {
+            $figure->restoreFigure();
+            return $this->redirect(Yii::$app->request->referrer);
+        } else {
+            return false;
+        }
     }
 }
