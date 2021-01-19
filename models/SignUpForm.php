@@ -17,11 +17,4 @@ class SignUpForm extends Model {
             [['username'], 'string']
         ];
     }
-
-
-
-    public function login()
-    {
-
-    }
 }
