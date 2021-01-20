@@ -161,9 +161,9 @@ class GameController extends Controller
         $playerModel = new SignUpForm();
         if ($playerModel->load(Yii::$app->request->post()) && $playerModel->validate()) {
             return $this->redirect(Url::toRoute(['game/figures-list', 'username' => $playerModel->username]));
-        } else {
-            return $this->render('sign-in', ['playerModel' => $playerModel]);
         }
+        return $this->render('sign-in', ['playerModel' => $playerModel]);
+
     }
 
     /**
