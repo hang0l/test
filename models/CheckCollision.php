@@ -50,7 +50,6 @@ class CheckCollision extends Model
 			if ($this->getShapeNumber($figureModelOne) > $this->getShapeNumber($figureModelTwo)) {
 				return (int)$figureModelTwo->id;
 			} else if ($this->getShapeNumber($figureModelOne) < $this->getShapeNumber($figureModelTwo)) {
-				var_dump($figureModelOne->id);
 				return (int)$figureModelOne->id;
 			}
 		}

@@ -18,7 +18,6 @@ class m201222_113907_create_figure_table extends Migration
             'shape' => $this->string(),
             'x' => $this->float()->defaultValue(rand(50, 750)),
             'y' => $this->float()->defaultValue(rand(150, 550)),
-            'isActive' => $this->boolean()->defaultValue(1)
         ]);
 
         $this->createIndex(

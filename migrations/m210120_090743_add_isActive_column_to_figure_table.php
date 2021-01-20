@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles adding columns to table `{{%figure}}`.
  */
-class m210120_082843_add_isActive_column_to_figure_table extends Migration
+class m210120_090743_add_isActive_column_to_figure_table extends Migration
 {
     /**
      * {@inheritdoc}

@@ -10,6 +10,7 @@ use yii\web\Controller;
 use app\models\Figure;
 use app\models\Player;
 use yii\data\ActiveDataProvider;
+use yii\web\Response;
 
 
 class GameController extends Controller
@@ -49,8 +50,8 @@ class GameController extends Controller
             if ($figureModel->safeDelete()) {
                 return true;
             }
-            return false;
         }
+        return false;
         /*
         else if(Yii::$app->request->get()) {
             $id = Yii::$app->request->get('id');
@@ -77,9 +78,8 @@ class GameController extends Controller
             if ($figureModel->save()) {
                 return true;
             }
-            return false;
-
         }
+        return false;
         /*
         else if(Yii::$app->request->get()) {
             $id = Yii::$app->request->get('id');
@@ -102,7 +102,7 @@ class GameController extends Controller
     {
         $figureModel = new Figure();
         $response = Yii::$app->response;
-        $response->format = \yii\web\Response::FORMAT_JSON;
+        $response->format = Response::FORMAT_JSON;
         try {
             $figureModel->load(Yii::$app->request->post(), '');
             $playerModel = Player::findOne(['username' => Yii::$app->request->post('username')]);
@@ -125,7 +125,8 @@ class GameController extends Controller
     }
 
     /**
-     * @return array
+     * @return array|false
+     *
      */
     public function actionCheckCollision()
     {
@@ -134,7 +135,10 @@ class GameController extends Controller
         $figureOne = new CheckCollision();
         $figureOne->load(Yii::$app->request->post(), '');
         $figureOne->collisionDistance = (int)Yii::$app->request->post('collisionDistance');
-        $figures = Figure::find()->where(['not in', 'id', $figureOne->id])->all();
+        $figures = Figure::find()
+            ->andWhere(['isActive' => 1])
+            ->andWhere(['not', ['id' => $figureOne->id]])
+            ->all();
         $figuresLength = count($figures);
         for($index = 0; $index <  $figuresLength; $index ++) {
             $distanceBetweenCenters = sqrt(
@@ -142,15 +146,13 @@ class GameController extends Controller
                 (($figureOne->y - $figures[$index]->y) ** 2)
             );
             if ($distanceBetweenCenters < $figureOne->collisionDistance) {
-                //echo '<pre>';
-                //var_dump($figureOne->id, $figures[$index]->id);
-                //echo '</pre>';
                 return $response->data =
                     ['id' => $figureOne->getIdToDelete(
                         $figureOne->id, $figures[$index]->id)
                     ];
             }
         }
+        return false;
     }
 
     /**
