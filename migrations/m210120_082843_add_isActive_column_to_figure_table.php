@@ -12,7 +12,7 @@ class m210120_082843_add_isActive_column_to_figure_table extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('{{%figure}}', 'isActive', $this->boolean());
+        $this->addColumn('{{%figure}}', 'isActive', $this->boolean()->defaultValue(1));
     }
 
     /**
