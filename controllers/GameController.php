@@ -193,8 +193,7 @@ class GameController extends Controller
         if($figure = Figure::findOne($id)) {
             $figure->restoreFigure();
             return $this->redirect(Yii::$app->request->referrer);
-        } else {
-            return false;
         }
+        return false;
     }
 }
